@@ -25,7 +25,7 @@ repositories {
 
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-data-jdbc")
-	implementation('org.xerial:sqlite-jdbc:3.45.1.0')
+	implementation("org.xerial:sqlite-jdbc:3.45.1.0")
 	implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
 	implementation("org.springframework.boot:spring-boot-starter-webmvc")
 	compileOnly("org.projectlombok:lombok")

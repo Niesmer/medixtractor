@@ -1,7 +1,9 @@
-package com.medicaments.model;
+package AHA.medixtractor.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @Builder
@@ -9,10 +11,9 @@ import jakarta.persistence.Id;
 @AllArgsConstructor
 public class Medicament {
 
-    @Id
-    private Integer cis;
-    private String nom;
-    private String forme;
-    private String voie;
-    private String laboratoire;
+  private Integer cis;
+  private String nom;
+  private String forme;
+  private String voie;
+  private String laboratoire;
 }

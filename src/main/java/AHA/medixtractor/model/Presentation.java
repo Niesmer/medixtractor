@@ -1,7 +1,9 @@
-package com.medicaments.model;
+package AHA.medixtractor.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @Builder
@@ -9,9 +11,8 @@ import jakarta.persistence.Id;
 @AllArgsConstructor
 public class Presentation {
 
-    @Id
-    private String cip;
-    private Integer cis;
-    private Double prix;
-    private String remboursement;
+  private String cip;
+  private Integer cis;
+  private Double prix;
+  private String remboursement;
 }

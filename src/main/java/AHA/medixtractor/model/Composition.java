@@ -1,8 +1,11 @@
-package com.medicaments.model;
+package AHA.medixtractor.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.GeneratedValue;
+import org.springframework.data.annotation.Id;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @Builder
@@ -10,12 +13,11 @@ import jakarta.persistence.GeneratedValue;
 @AllArgsConstructor
 public class Composition {
 
-    @Id
-    @GeneratedValue
-    private Integer id;
+  @Id
+  private Integer id;
 
-    private Integer cis;
-    private String substance;
-    private Double dosage;
-    private String unite;
+  private Integer cis;
+  private String substance;
+  private Double dosage;
+  private String unite;
 }

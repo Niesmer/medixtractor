@@ -1,11 +1,11 @@
 package AHA.medixtractor.repository;
 
-import org.springframework.data.repository.ListCrudRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import AHA.medixtractor.model.Medicament;
 
 @Repository
-public interface MedicamentRepository extends ListCrudRepository<Medicament, Long> {
-    
+public interface MedicamentRepository extends JpaRepository<Medicament, Long> {
+
 }

@@ -1,17 +1,24 @@
 package AHA.medixtractor.model;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+@Entity
+@Table(name = "medicament")
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class Medicament {
 
-  private Integer cis;
+  @Id
+  private Long cis;
   private String nom;
   private String forme;
   private String voie;

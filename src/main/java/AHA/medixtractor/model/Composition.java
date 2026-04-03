@@ -1,12 +1,16 @@
 package AHA.medixtractor.model;
 
-import org.springframework.data.annotation.Id;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+@Entity
+@Table(name = "compositions")
 @Data
 @Builder
 @NoArgsConstructor
@@ -16,7 +20,7 @@ public class Composition {
   @Id
   private Integer id;
 
-  private Integer cis;
+  private Long cis;
   private String substance;
   private Double dosage;
   private String unite;

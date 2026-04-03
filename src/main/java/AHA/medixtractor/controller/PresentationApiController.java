@@ -12,27 +12,27 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import AHA.medixtractor.model.Medicament;
-import AHA.medixtractor.service.MedicamentService;
+import AHA.medixtractor.model.Presentation;
+import AHA.medixtractor.service.PresentationService;
 
 @RestController
-@RequestMapping("/api/medicaments")
-public class MedicamentApiController {
+@RequestMapping("/api/presentations")
+public class PresentationApiController {
 
-    private final MedicamentService medicamentService;
+    private final PresentationService presentationService;
 
-    public MedicamentApiController(MedicamentService medicamentService) {
-        this.medicamentService = medicamentService;
+    public PresentationApiController(PresentationService presentationService) {
+        this.presentationService = presentationService;
     }
 
     @GetMapping
-    public List<Medicament> getAllMedicaments() {
-        return medicamentService.getMedicaments();
+    public List<Presentation> getAllPresentations() {
+        return presentationService.getPresentations();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Medicament> getById(@PathVariable Long id) {
-        return medicamentService.getMedicamentById(id)
+    public ResponseEntity<Presentation> getById(@PathVariable String id) {
+        return presentationService.getPresentationById(id)
             .map(ResponseEntity::ok)
             .orElse(ResponseEntity.notFound().build());
     }
@@ -41,7 +41,7 @@ public class MedicamentApiController {
     @PostMapping("/import")
     public ResponseEntity<Void> importFromJson(@RequestBody String jsonPayload) {
         
-        medicamentService.createMedicamentsFromJSON(jsonPayload);
+        presentationService.createPresentationsFromJSON(jsonPayload);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 

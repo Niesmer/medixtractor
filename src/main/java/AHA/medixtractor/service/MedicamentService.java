@@ -11,26 +11,25 @@ import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 
 @Service
-public class MediacamentService {
+public class MedicamentService {
     private final MedicamentRepository medicamentRepository;
     private final ObjectMapper objectMapper;
 
 
-    public MediacamentService(MedicamentRepository medicamentRepository, ObjectMapper objectMapper) {
+    public MedicamentService(MedicamentRepository medicamentRepository, ObjectMapper objectMapper) {
         this.medicamentRepository = medicamentRepository;
         this.objectMapper = objectMapper;
     }
-
-    public void createMedicament(Medicament medicament){
-        medicamentRepository.save(medicament);
-    }
-    
 
     public Optional<Medicament> getMedicamentById(Long id){
        return medicamentRepository.findById(id);
     }
 
     public List<Medicament> getMedicaments(){
+        return medicamentRepository.findAll();
+    }
+
+    public List<Medicament> filterMedicaments(){
         return medicamentRepository.findAll();
     }
 

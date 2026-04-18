@@ -16,6 +16,7 @@ import AHA.medixtractor.dto.BdpmImportResponse;
 import AHA.medixtractor.dto.DatabaseStatusResponse;
 import AHA.medixtractor.dto.StartupImportStatusResponse;
 import AHA.medixtractor.service.BdpmImportService;
+import AHA.medixtractor.service.BdpmRemoteImportService;
 import AHA.medixtractor.service.StartupImportService;
 
 @RestController
@@ -23,15 +24,18 @@ import AHA.medixtractor.service.StartupImportService;
 public class BdpmImportController {
 
     private final BdpmImportService bdpmImportService;
+    private final BdpmRemoteImportService bdpmRemoteImportService;
     private final BdpmProperties bdpmProperties;
     private final StartupImportService startupImportService;
 
     public BdpmImportController(
         BdpmImportService bdpmImportService,
+        BdpmRemoteImportService bdpmRemoteImportService,
         BdpmProperties bdpmProperties,
         StartupImportService startupImportService
     ) {
         this.bdpmImportService = bdpmImportService;
+        this.bdpmRemoteImportService = bdpmRemoteImportService;
         this.bdpmProperties = bdpmProperties;
         this.startupImportService = startupImportService;
     }
@@ -43,6 +47,13 @@ public class BdpmImportController {
             ? bdpmProperties.defaultSourceDir()
             : sourceDir.trim();
         return bdpmImportService.importFromDirectory(Path.of(effectiveSourceDir));
+    }
+
+    @PostMapping("/bdpm/remote")
+    @ResponseStatus(HttpStatus.CREATED)
+    public BdpmImportResponse importBdpmRemote(@RequestParam(defaultValue = "false") boolean force) {
+        Path downloadedDir = bdpmRemoteImportService.downloadBdpmFiles(force);
+        return bdpmImportService.importFromDirectory(downloadedDir);
     }
 
     @GetMapping("/statut")

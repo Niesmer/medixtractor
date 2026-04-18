@@ -2,6 +2,11 @@
 
 const API_BASE = '/api';
 
+function authHeaders(): HeadersInit {
+  const token = localStorage.getItem('authToken');
+  return token ? { Authorization: `Bearer ${token}` } : {};
+}
+
 // Helper to detect and provide better error messages
 function parseApiError(text: string, endpoint: string, status: number): string {
   // Check if response is HTML (error page)
@@ -106,7 +111,82 @@ export interface FilterParams {
   substance?: string;
   forme?: string;
   statut?: string;
+  rembourse?: string;
   laboratoire?: string;
+}
+
+export async function getFavoriteCis(): Promise<string[]> {
+  const endpoint = "/api/favorites/cis";
+  try {
+    const response = await fetch(`${API_BASE}/favorites/cis`, { headers: { ...authHeaders() } });
+    const text = await response.text();
+    if (!response.ok) {
+      const errorMsg = parseApiError(text, endpoint, response.status);
+      throw new Error(errorMsg);
+    }
+    if (!text) return [];
+    const values = JSON.parse(text) as Array<string | number>;
+    return values.map((v) => String(v));
+  } catch (e) {
+    const errorMessage = e instanceof Error ? e.message : String(e);
+    console.error("Favorites cis error:", errorMessage);
+    throw e;
+  }
+}
+
+export async function getFavorites(): Promise<Medicament[]> {
+  const endpoint = "/api/favorites";
+  try {
+    const response = await fetch(`${API_BASE}/favorites`, { headers: { ...authHeaders() } });
+    const text = await response.text();
+    if (!response.ok) {
+      const errorMsg = parseApiError(text, endpoint, response.status);
+      throw new Error(errorMsg);
+    }
+    if (!text) return [];
+    return JSON.parse(text) as Medicament[];
+  } catch (e) {
+    const errorMessage = e instanceof Error ? e.message : String(e);
+    console.error("Favorites error:", errorMessage);
+    throw e;
+  }
+}
+
+export async function isFavorite(cis: string | number): Promise<boolean> {
+  const endpoint = `/api/favorites/${cis}`;
+  const response = await fetch(`${API_BASE}/favorites/${cis}`, { headers: { ...authHeaders() } });
+  const text = await response.text();
+  if (!response.ok) {
+    const errorMsg = parseApiError(text, endpoint, response.status);
+    throw new Error(errorMsg);
+  }
+  return text.trim() === "true";
+}
+
+export async function addFavorite(cis: string | number): Promise<void> {
+  const endpoint = `/api/favorites/${cis}`;
+  const response = await fetch(`${API_BASE}/favorites/${cis}`, {
+    method: "POST",
+    headers: { ...authHeaders() }
+  });
+  const text = await response.text();
+  if (!response.ok) {
+    const errorMsg = parseApiError(text, endpoint, response.status);
+    throw new Error(errorMsg);
+  }
+}
+
+export async function removeFavorite(cis: string | number): Promise<void> {
+  const endpoint = `/api/favorites/${cis}`;
+  const response = await fetch(`${API_BASE}/favorites/${cis}`, {
+    method: "DELETE",
+    headers: { ...authHeaders() }
+  });
+  const text = await response.text();
+  if (!response.ok) {
+    const errorMsg = parseApiError(text, endpoint, response.status);
+    throw new Error(errorMsg);
+  }
 }
 
 // Get available filters
@@ -351,6 +431,34 @@ export async function importBDPM(sourceDir: string): Promise<ImportStatus> {
     if (e instanceof SyntaxError) {
       console.error('Failed to parse import response:', e);
       throw new Error('Invalid response format from server during import');
+    }
+    throw e;
+  }
+}
+
+// Import BDPM data directly from the official download URLs (backend handles download + cache)
+export async function importBDPMRemote(force = false): Promise<ImportStatus> {
+  const params = new URLSearchParams({ force: String(force) });
+  try {
+    const response = await fetch(`${API_BASE}/imports/bdpm/remote?${params}`, {
+      method: 'POST'
+    });
+
+    const text = await response.text();
+
+    if (!response.ok) {
+      throw new Error(text || 'Remote import failed');
+    }
+
+    if (!text) {
+      throw new Error('Empty response from remote import');
+    }
+
+    return JSON.parse(text);
+  } catch (e) {
+    if (e instanceof SyntaxError) {
+      console.error('Failed to parse remote import response:', e);
+      throw new Error('Invalid response format from server during remote import');
     }
     throw e;
   }

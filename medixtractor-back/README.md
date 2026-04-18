@@ -6,18 +6,25 @@ Application Spring Boot en Java pour importer la base officielle BDPM francaise,
 
 - Java 21 ou plus recent
 
-## Fichiers BDPM attendus
+## Import BDPM (en ligne)
 
-Placer dans `data/bdpm` ou dans un autre dossier :
+Par defaut, l'application peut telecharger les fichiers BDPM depuis le site officiel du gouvernement et les mettre en cache dans `data/bdpm-cache`.
 
-- `CIS_bdpm.txt`
-- `CIS_CIP_bdpm.txt`
-- `CIS_COMPO_bdpm.txt`
+Endpoint : `POST /api/imports/bdpm/remote`
 
-Source officielle :
-`http://base-donnees-publique.medicaments.gouv.fr/telechargement`
+Les URLs et le cache sont configurables dans `src/main/resources/application.properties` (prefixe `medixtractor.bdpm.remote.*`).
 
-## Lancement
+## Import BDPM (local, optionnel)
+
+Vous pouvez aussi importer depuis un dossier local contenant :
+
+- `CIS_bdpm.txt` (specialites)
+- `CIS_CIP_bdpm.txt` (presentations)
+- `CIS_COMPO_bdpm.txt` (compositions)
+
+Endpoint : `POST /api/imports/bdpm?sourceDir=...`
+
+## Lancement (backend)
 
 ```powershell
 .\gradlew.bat bootRun

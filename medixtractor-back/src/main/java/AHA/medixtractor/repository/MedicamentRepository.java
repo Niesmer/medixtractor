@@ -31,6 +31,25 @@ public interface MedicamentRepository extends JpaRepository<Medicament, Long> {
                ))
           and (:forme is null or lower(m.forme) = lower(:forme))
           and (:statut is null or lower(m.statut) = lower(:statut))
+          and (
+              :rembourse is null
+              or (lower(:rembourse) = 'oui' and exists (
+                  select 1 from presentation p
+                  where p.cis = m.cis
+                    and p.remboursement is not null
+                    and trim(p.remboursement) <> ''
+                    and lower(trim(p.remboursement)) not in ('non', 'non remboursable', 'nr')
+                    and trim(p.remboursement) not like '0%'
+              ))
+              or (lower(:rembourse) = 'non' and not exists (
+                  select 1 from presentation p
+                  where p.cis = m.cis
+                    and p.remboursement is not null
+                    and trim(p.remboursement) <> ''
+                    and lower(trim(p.remboursement)) not in ('non', 'non remboursable', 'nr')
+                    and trim(p.remboursement) not like '0%'
+              ))
+          )
           and (:laboratoire is null or lower(m.laboratoire) = lower(:laboratoire))
         order by m.nom asc
         limit 50
@@ -40,6 +59,7 @@ public interface MedicamentRepository extends JpaRepository<Medicament, Long> {
         @Param("substance") String substance,
         @Param("forme") String forme,
         @Param("statut") String statut,
+        @Param("rembourse") String rembourse,
         @Param("laboratoire") String laboratoire
     );
 
@@ -87,6 +107,25 @@ public interface MedicamentRepository extends JpaRepository<Medicament, Long> {
                      and lower(c2.substance) = lower(:substance)
                ))
           and (:statut is null or lower(m.statut) = lower(:statut))
+          and (
+              :rembourse is null
+              or (lower(:rembourse) = 'oui' and exists (
+                  select 1 from presentation p
+                  where p.cis = m.cis
+                    and p.remboursement is not null
+                    and trim(p.remboursement) <> ''
+                    and lower(trim(p.remboursement)) not in ('non', 'non remboursable', 'nr')
+                    and trim(p.remboursement) not like '0%'
+              ))
+              or (lower(:rembourse) = 'non' and not exists (
+                  select 1 from presentation p
+                  where p.cis = m.cis
+                    and p.remboursement is not null
+                    and trim(p.remboursement) <> ''
+                    and lower(trim(p.remboursement)) not in ('non', 'non remboursable', 'nr')
+                    and trim(p.remboursement) not like '0%'
+              ))
+          )
           and (:laboratoire is null or lower(m.laboratoire) = lower(:laboratoire))
         order by m.forme asc
         """, nativeQuery = true)
@@ -94,6 +133,7 @@ public interface MedicamentRepository extends JpaRepository<Medicament, Long> {
         @Param("query") String query,
         @Param("substance") String substance,
         @Param("statut") String statut,
+        @Param("rembourse") String rembourse,
         @Param("laboratoire") String laboratoire
     );
 
@@ -117,6 +157,25 @@ public interface MedicamentRepository extends JpaRepository<Medicament, Long> {
                      and lower(c2.substance) = lower(:substance)
                ))
           and (:forme is null or lower(m.forme) = lower(:forme))
+          and (
+              :rembourse is null
+              or (lower(:rembourse) = 'oui' and exists (
+                  select 1 from presentation p
+                  where p.cis = m.cis
+                    and p.remboursement is not null
+                    and trim(p.remboursement) <> ''
+                    and lower(trim(p.remboursement)) not in ('non', 'non remboursable', 'nr')
+                    and trim(p.remboursement) not like '0%'
+              ))
+              or (lower(:rembourse) = 'non' and not exists (
+                  select 1 from presentation p
+                  where p.cis = m.cis
+                    and p.remboursement is not null
+                    and trim(p.remboursement) <> ''
+                    and lower(trim(p.remboursement)) not in ('non', 'non remboursable', 'nr')
+                    and trim(p.remboursement) not like '0%'
+              ))
+          )
           and (:laboratoire is null or lower(m.laboratoire) = lower(:laboratoire))
         order by m.statut asc
         """, nativeQuery = true)
@@ -124,6 +183,7 @@ public interface MedicamentRepository extends JpaRepository<Medicament, Long> {
         @Param("query") String query,
         @Param("substance") String substance,
         @Param("forme") String forme,
+        @Param("rembourse") String rembourse,
         @Param("laboratoire") String laboratoire
     );
 
@@ -148,12 +208,32 @@ public interface MedicamentRepository extends JpaRepository<Medicament, Long> {
                ))
           and (:forme is null or lower(m.forme) = lower(:forme))
           and (:statut is null or lower(m.statut) = lower(:statut))
+          and (
+              :rembourse is null
+              or (lower(:rembourse) = 'oui' and exists (
+                  select 1 from presentation p
+                  where p.cis = m.cis
+                    and p.remboursement is not null
+                    and trim(p.remboursement) <> ''
+                    and lower(trim(p.remboursement)) not in ('non', 'non remboursable', 'nr')
+                    and trim(p.remboursement) not like '0%'
+              ))
+              or (lower(:rembourse) = 'non' and not exists (
+                  select 1 from presentation p
+                  where p.cis = m.cis
+                    and p.remboursement is not null
+                    and trim(p.remboursement) <> ''
+                    and lower(trim(p.remboursement)) not in ('non', 'non remboursable', 'nr')
+                    and trim(p.remboursement) not like '0%'
+              ))
+          )
         order by m.laboratoire asc
         """, nativeQuery = true)
     List<String> findCompatibleLaboratoires(
         @Param("query") String query,
         @Param("substance") String substance,
         @Param("forme") String forme,
-        @Param("statut") String statut
+        @Param("statut") String statut,
+        @Param("rembourse") String rembourse
     );
 }

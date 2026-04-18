@@ -115,6 +115,15 @@
             </div>
 
             <div class="field">
+              <label for="filter-rembourse">Rembourse</label>
+              <select id="filter-rembourse" name="rembourse">
+                <option value="">Tous</option>
+                <option value="oui">Oui</option>
+                <option value="non">Non</option>
+              </select>
+            </div>
+
+            <div class="field">
               <label for="filter-laboratoire">Laboratoire</label>
               <select id="filter-laboratoire" name="laboratoire">
                 <option value="">Tous les laboratoires</option>
@@ -168,7 +177,7 @@
 
   <script>
     const state = {
-      filters: { query: "", substance: "", forme: "", statut: "", laboratoire: "" },
+      filters: { query: "", substance: "", forme: "", statut: "", rembourse: "", laboratoire: "" },
       results: [],
       detail: null,
       currentView: "home",
@@ -194,6 +203,7 @@
       filterSubstance: document.getElementById("filter-substance"),
       filterForme: document.getElementById("filter-forme"),
       filterStatut: document.getElementById("filter-statut"),
+      filterRembourse: document.getElementById("filter-rembourse"),
       filterLaboratoire: document.getElementById("filter-laboratoire"),
       resultsMeta: document.getElementById("results-meta"),
       activeTags: document.getElementById("active-tags"),
@@ -234,7 +244,7 @@
       await runSearch();
     });
 
-    [elements.filterSubstance, elements.filterForme, elements.filterStatut, elements.filterLaboratoire].forEach((element) => {
+    [elements.filterSubstance, elements.filterForme, elements.filterStatut, elements.filterRembourse, elements.filterLaboratoire].forEach((element) => {
       element.addEventListener("change", async () => {
         collectFiltersFromForm();
         await runSearch();
@@ -242,7 +252,7 @@
     });
 
     elements.resetFilters.addEventListener("click", async () => {
-      state.filters = { query: "", substance: "", forme: "", statut: "", laboratoire: "" };
+      state.filters = { query: "", substance: "", forme: "", statut: "", rembourse: "", laboratoire: "" };
       syncFiltersToForm();
       renderFilterOptions(state.allFilters);
       await runSearch();
@@ -408,6 +418,7 @@
         substance: elements.filterSubstance.value.trim(),
         forme: elements.filterForme.value.trim(),
         statut: elements.filterStatut.value.trim(),
+        rembourse: elements.filterRembourse.value.trim(),
         laboratoire: elements.filterLaboratoire.value.trim()
       };
       elements.globalSearchInput.value = state.filters.query;
@@ -418,6 +429,7 @@
       elements.filterSubstance.value = state.filters.substance;
       elements.filterForme.value = state.filters.forme;
       elements.filterStatut.value = state.filters.statut;
+      elements.filterRembourse.value = state.filters.rembourse;
       elements.filterLaboratoire.value = state.filters.laboratoire;
       elements.globalSearchInput.value = state.filters.query;
     }
@@ -449,7 +461,7 @@
     function renderTags() {
       const active = Object.entries(state.filters).filter(([, value]) => value);
       elements.activeTags.innerHTML = active.map(([key, value]) =>
-        `<span class="chip">${escapeHtml(labelForFilter(key))}: ${escapeHtml(value)}</span>`
+        `<span class="chip">${escapeHtml(labelForFilter(key))}: ${escapeHtml(displayValueForFilter(key, value))}</span>`
       ).join("");
     }
 
@@ -614,9 +626,18 @@
         case "substance": return "Substance";
         case "forme": return "Forme";
         case "statut": return "Statut";
+        case "rembourse": return "Rembourse";
         case "laboratoire": return "Laboratoire";
         default: return key;
       }
+    }
+
+    function displayValueForFilter(key, value) {
+      if (key === "rembourse") {
+        if (value === "oui") return "Oui";
+        if (value === "non") return "Non";
+      }
+      return value;
     }
 
     function statusClass(status) {

@@ -5,7 +5,7 @@ import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Alert, AlertDescription } from "./ui/alert";
-import { getDatabaseStatus, getStartupImportStatus, importBDPM, type DatabaseStatus, type ImportStatus } from "../services/api";
+import { getDatabaseStatus, getStartupImportStatus, importBDPM, importBDPMRemote, type DatabaseStatus, type ImportStatus } from "../services/api";
 
 export function Home() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -53,6 +53,28 @@ export function Home() {
       setImportStatus(result);
 
       // Reload stats after import
+      try {
+        const statusData = await getDatabaseStatus();
+        setStats(statusData);
+      } catch (error) {
+        console.error("Failed to reload database status:", error);
+      }
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "Import failed";
+      setImportError(errorMessage);
+    } finally {
+      setIsImporting(false);
+    }
+  };
+
+  const handleRemoteImport = async () => {
+    setIsImporting(true);
+    setImportError("");
+
+    try {
+      const result = await importBDPMRemote(false);
+      setImportStatus(result);
+
       try {
         const statusData = await getDatabaseStatus();
         setStats(statusData);
@@ -228,31 +250,48 @@ export function Home() {
             </CardHeader>
             <CardContent className="space-y-4">
               <p className="text-sm text-gray-600">
-                Placez <code className="bg-gray-100 px-2 py-1 rounded text-xs">CIS_bdpm.txt</code>, <code className="bg-gray-100 px-2 py-1 rounded text-xs">CIS_CIP_bdpm.txt</code> et <code className="bg-gray-100 px-2 py-1 rounded text-xs">CIS_COMPO_bdpm.txt</code> dans un dossier local puis lancez l'import.
+                Importez la BDPM directement depuis les liens officiels du gouvernement (téléchargement).
               </p>
 
-              <form onSubmit={handleImport} className="space-y-3">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Dossier source
-                  </label>
-                  <Input
-                    type="text"
-                    value={sourceDir}
-                    onChange={(e) => setSourceDir(e.target.value)}
-                    placeholder="data/bdpm"
-                    disabled={isImporting}
-                  />
-                </div>
-
+              <div className="space-y-3">
                 <Button
-                  type="submit"
+                  type="button"
+                  onClick={handleRemoteImport}
                   disabled={isImporting}
                   className="w-full"
                 >
-                  {isImporting ? "Import en cours..." : "Importer la BDPM"}
+                  {isImporting ? "Import en cours..." : "Importer depuis Internet"}
                 </Button>
-              </form>
+
+                <details className="rounded-lg border border-gray-200 bg-gray-50 p-3">
+                  <summary className="cursor-pointer text-sm font-medium text-gray-800">
+                    Import local (optionnel)
+                  </summary>
+                  <form onSubmit={handleImport} className="space-y-3 mt-3">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Dossier source
+                      </label>
+                      <Input
+                        type="text"
+                        value={sourceDir}
+                        onChange={(e) => setSourceDir(e.target.value)}
+                        placeholder="data/bdpm"
+                        disabled={isImporting}
+                      />
+                      <p className="mt-1 text-xs text-gray-600">
+                        Le dossier doit contenir <code className="bg-gray-100 px-1 py-0.5 rounded">CIS_bdpm.txt</code>,{" "}
+                        <code className="bg-gray-100 px-1 py-0.5 rounded">CIS_CIP_bdpm.txt</code> et{" "}
+                        <code className="bg-gray-100 px-1 py-0.5 rounded">CIS_COMPO_bdpm.txt</code>.
+                      </p>
+                    </div>
+
+                    <Button type="submit" disabled={isImporting} className="w-full" variant="secondary">
+                      {isImporting ? "Import en cours..." : "Importer depuis un dossier"}
+                    </Button>
+                  </form>
+                </details>
+              </div>
 
               {importError && (
                 <Alert variant="destructive">

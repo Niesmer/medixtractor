@@ -32,9 +32,10 @@ public class MedicamentController {
         @RequestParam(required = false) String substance,
         @RequestParam(required = false) String forme,
         @RequestParam(required = false) String statut,
+        @RequestParam(required = false) String rembourse,
         @RequestParam(required = false) String laboratoire
     ) {
-        return medicamentQueryService.search(query, substance, forme, statut, laboratoire);
+        return medicamentQueryService.search(query, substance, forme, statut, rembourse, laboratoire);
     }
 
     @GetMapping("/medicaments/{cis}")
@@ -53,9 +54,10 @@ public class MedicamentController {
         @RequestParam(required = false) String substance,
         @RequestParam(required = false) String forme,
         @RequestParam(required = false) String statut,
+        @RequestParam(required = false) String rembourse,
         @RequestParam(required = false) String laboratoire
     ) {
-        return medicamentQueryService.getCompatibleFilters(query, substance, forme, statut, laboratoire);
+        return medicamentQueryService.getCompatibleFilters(query, substance, forme, statut, rembourse, laboratoire);
     }
 
     @ExceptionHandler(IllegalArgumentException.class)

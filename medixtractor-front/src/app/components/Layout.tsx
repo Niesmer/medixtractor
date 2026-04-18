@@ -1,5 +1,5 @@
 import { Outlet, Link, useNavigate, useSearchParams, useLocation } from "react-router";
-import { Search, Pill, X, LogOut } from "lucide-react";
+import { Search, Pill, X, LogOut, Star } from "lucide-react";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { useState, useEffect, useRef } from "react";
@@ -212,8 +212,8 @@ export function Layout() {
                     className="flex items-center gap-3 hover:opacity-80 transition-opacity"
                   >
                     <div className="text-right hidden md:block">
-                      <p className="text-sm font-medium text-gray-900">{user.fullName}</p>
-                      <p className="text-xs text-gray-500">{user.role}</p>
+                      <p className="text-sm font-medium text-gray-900 leading-tight">{user.fullName}</p>
+                      <p className="text-xs text-gray-500 leading-tight">{user.role}</p>
                     </div>
                     <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
                       <span className="text-sm font-semibold text-blue-600">
@@ -225,6 +225,14 @@ export function Layout() {
                   {/* User Menu Dropdown */}
                   {showUserMenu && (
                     <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg overflow-hidden z-50">
+                      <Link
+                        to="/favorites"
+                        onClick={() => setShowUserMenu(false)}
+                        className="w-full px-4 py-3 text-left text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-2 font-medium"
+                      >
+                        <Star className="w-4 h-4" />
+                        Favoris
+                      </Link>
                       <button
                         onClick={handleLogout}
                         className="w-full px-4 py-3 text-left text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-2 font-medium"

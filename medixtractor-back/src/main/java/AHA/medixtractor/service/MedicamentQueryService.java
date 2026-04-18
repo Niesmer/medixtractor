@@ -38,12 +38,20 @@ public class MedicamentQueryService {
     }
 
     @Transactional(readOnly = true)
-    public List<MedicamentSummaryView> search(String query, String substance, String forme, String statut, String laboratoire) {
+    public List<MedicamentSummaryView> search(
+        String query,
+        String substance,
+        String forme,
+        String statut,
+        String rembourse,
+        String laboratoire
+    ) {
         List<Medicament> medicaments = medicamentRepository.search(
             normalize(query),
             normalize(substance),
             normalize(forme),
             normalize(statut),
+            normalize(rembourse),
             normalize(laboratoire)
         );
         Map<Long, List<String>> substancesByCis = loadSubstancesByCis(medicaments.stream().map(Medicament::getCis).toList());
@@ -90,36 +98,48 @@ public class MedicamentQueryService {
     }
 
     @Transactional(readOnly = true)
-    public SearchFiltersDto getCompatibleFilters(String query, String substance, String forme, String statut, String laboratoire) {
+    public SearchFiltersDto getCompatibleFilters(
+        String query,
+        String substance,
+        String forme,
+        String statut,
+        String rembourse,
+        String laboratoire
+    ) {
         String normalizedQuery = normalize(query);
         String normalizedSubstance = normalize(substance);
         String normalizedForme = normalize(forme);
         String normalizedStatut = normalize(statut);
+        String normalizedRembourse = normalize(rembourse);
         String normalizedLaboratoire = normalize(laboratoire);
 
         List<String> substances = compositionRepository.findCompatibleSubstances(
             normalizedQuery,
             normalizedForme,
             normalizedStatut,
+            normalizedRembourse,
             normalizedLaboratoire
         );
         List<String> formes = medicamentRepository.findCompatibleFormes(
             normalizedQuery,
             normalizedSubstance,
             normalizedStatut,
+            normalizedRembourse,
             normalizedLaboratoire
         );
         List<String> statuts = medicamentRepository.findCompatibleStatuts(
             normalizedQuery,
             normalizedSubstance,
             normalizedForme,
+            normalizedRembourse,
             normalizedLaboratoire
         );
         List<String> laboratoires = medicamentRepository.findCompatibleLaboratoires(
             normalizedQuery,
             normalizedSubstance,
             normalizedForme,
-            normalizedStatut
+            normalizedStatut,
+            normalizedRembourse
         );
 
         return new SearchFiltersDto(substances, formes, statuts, laboratoires);

@@ -1,13 +1,14 @@
 import { useState, useEffect } from "react";
-import { useSearchParams, Link } from "react-router";
-import { Search, Filter, X, Pill, ChevronRight, AlertCircle } from "lucide-react";
+import { useSearchParams, Link, useNavigate } from "react-router";
+import { Search, Filter, X, Pill, ChevronRight, AlertCircle, Star } from "lucide-react";
 import { Card, CardContent } from "./ui/card";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
 import { Alert, AlertDescription } from "./ui/alert";
-import { searchMedicaments, getCompatibleFilters, type Medicament, type FilterParams } from "../services/api";
+import { searchMedicaments, getCompatibleFilters, getFavoriteCis, addFavorite, removeFavorite, type Medicament, type FilterParams } from "../services/api";
 
 export function SearchResults() {
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const query = searchParams.get("q") || "";
 
@@ -19,6 +20,7 @@ export function SearchResults() {
   const [filterSubstance, setFilterSubstance] = useState("");
   const [filterForme, setFilterForme] = useState("");
   const [filterStatut, setFilterStatut] = useState("");
+  const [filterRembourse, setFilterRembourse] = useState("");
   const [filterLaboratoire, setFilterLaboratoire] = useState("");
 
   const [availableFilters, setAvailableFilters] = useState({
@@ -29,6 +31,32 @@ export function SearchResults() {
   });
 
   const [showFilters, setShowFilters] = useState(true);
+  const [favoriteCis, setFavoriteCis] = useState<Set<string>>(new Set());
+  const [favoritesLoading, setFavoritesLoading] = useState(false);
+
+  const isAuthenticated = Boolean(localStorage.getItem("authToken"));
+
+  useEffect(() => {
+    const loadFavorites = async () => {
+      if (!isAuthenticated) {
+        setFavoriteCis(new Set());
+        return;
+      }
+
+      setFavoritesLoading(true);
+      try {
+        const cisValues = await getFavoriteCis();
+        setFavoriteCis(new Set(cisValues.map(String)));
+      } catch {
+        // If favorites fail, don't block search.
+        setFavoriteCis(new Set());
+      } finally {
+        setFavoritesLoading(false);
+      }
+    };
+
+    loadFavorites();
+  }, [isAuthenticated]);
 
   // Perform search whenever filters change
   useEffect(() => {
@@ -42,6 +70,7 @@ export function SearchResults() {
           substance: filterSubstance || undefined,
           forme: filterForme || undefined,
           statut: filterStatut || undefined,
+          rembourse: filterRembourse || undefined,
           laboratoire: filterLaboratoire || undefined
         };
 
@@ -63,7 +92,7 @@ export function SearchResults() {
     };
 
     performSearch();
-  }, [query, filterSubstance, filterStatut, filterForme, filterLaboratoire]);
+  }, [query, filterSubstance, filterStatut, filterForme, filterRembourse, filterLaboratoire]);
 
   const refreshCompatibleFilters = async (params: FilterParams) => {
     try {
@@ -83,17 +112,49 @@ export function SearchResults() {
     setFilterSubstance("");
     setFilterStatut("");
     setFilterForme("");
+    setFilterRembourse("");
     setFilterLaboratoire("");
   };
 
   const hasActiveFilters =
-    filterSubstance || filterStatut || filterForme || filterLaboratoire;
+    filterSubstance || filterStatut || filterForme || filterRembourse || filterLaboratoire;
 
   const getStatusColor = (status: string) => {
     const lowerStatus = status?.toLowerCase() || "";
     if (lowerStatus.includes("retir")) return "bg-red-100 text-red-700 border-red-200";
     if (lowerStatus.includes("suspend")) return "bg-orange-100 text-orange-700 border-orange-200";
     return "bg-green-100 text-green-700 border-green-200";
+  };
+
+  const toggleFavorite = async (cis: string) => {
+    if (!isAuthenticated) {
+      navigate("/login");
+      return;
+    }
+
+    const key = String(cis);
+    const isFav = favoriteCis.has(key);
+
+    // Optimistic UI.
+    setFavoriteCis((prev) => {
+      const next = new Set(prev);
+      if (isFav) next.delete(key);
+      else next.add(key);
+      return next;
+    });
+
+    try {
+      if (isFav) await removeFavorite(key);
+      else await addFavorite(key);
+    } catch {
+      // Rollback on error.
+      setFavoriteCis((prev) => {
+        const next = new Set(prev);
+        if (isFav) next.add(key);
+        else next.delete(key);
+        return next;
+      });
+    }
   };
 
   return (
@@ -206,6 +267,22 @@ export function SearchResults() {
                 </select>
               </div>
 
+              {/* Filtre remboursement */}
+              <div className="mb-6">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Remboursement
+                </label>
+                <select
+                  value={filterRembourse}
+                  onChange={(e) => setFilterRembourse(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md bg-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="">Tous</option>
+                  <option value="oui">Oui</option>
+                  <option value="non">Non</option>
+                </select>
+              </div>
+
               {/* Laboratory Filter */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -286,6 +363,20 @@ export function SearchResults() {
                   </button>
                 </Badge>
               )}
+              {filterRembourse && (
+                <Badge
+                  variant="secondary"
+                  className="flex items-center gap-1"
+                >
+                  RemboursÃ©: {filterRembourse === "oui" ? "Oui" : "Non"}
+                  <button
+                    onClick={() => setFilterRembourse("")}
+                    className="ml-1 hover:bg-gray-300 rounded-full p-0.5"
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                </Badge>
+              )}
               {filterLaboratoire && (
                 <Badge
                   variant="secondary"
@@ -347,6 +438,26 @@ export function SearchResults() {
                             </p>
                           </div>
                         </div>
+
+                        <button
+                          type="button"
+                          disabled={favoritesLoading}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            toggleFavorite(String(med.cis));
+                          }}
+                          className="p-2 rounded-md hover:bg-gray-50 disabled:opacity-50"
+                          title={favoriteCis.has(String(med.cis)) ? "Retirer des favoris" : "Ajouter aux favoris"}
+                        >
+                          <Star
+                            className={
+                              favoriteCis.has(String(med.cis))
+                                ? "w-5 h-5 text-yellow-500 fill-yellow-500"
+                                : "w-5 h-5 text-gray-400"
+                            }
+                          />
+                        </button>
 
                         <ChevronRight className="w-5 h-5 text-gray-400 flex-shrink-0" />
                       </div>

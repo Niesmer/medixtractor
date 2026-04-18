@@ -5,6 +5,7 @@ import { SearchResults } from "./components/SearchResults";
 import { DrugDetail } from "./components/DrugDetail";
 import { SignupPage } from "./components/SignupPage";
 import { LoginPage } from "./components/LoginPage";
+import { Favorites } from "./components/Favorites";
 
 export const router = createBrowserRouter([
   {
@@ -16,6 +17,7 @@ export const router = createBrowserRouter([
       { path: "recherche", Component: SearchResults }, // Support old URL
       { path: "drug/:id", Component: DrugDetail },
       { path: "medicament/:id", Component: DrugDetail }, // Support old URL
+      { path: "favorites", Component: Favorites },
       { path: "signup", Component: SignupPage },
       { path: "login", Component: LoginPage },
     ],

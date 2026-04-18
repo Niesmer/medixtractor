@@ -42,36 +42,39 @@ class MedixtractorApplicationTests {
         Path sourceDir = Files.createDirectories(tempDir.resolve("bdpm"));
         write(sourceDir.resolve("CIS_bdpm.txt"),
             "12345678\tDOLIPRANE 1000 mg, comprime\tcomprime\torale\tAMM\tNationale\tCommercialise\t01/01/2020\tDisponible\tEU/123\tSANOFI\tNon",
-            "87654321\tIBUPROFENE BIOGARAN 400 mg, comprime\tcomprime\torale\tAMM\tNationale\tCommercialise\t05/02/2021\tDisponible\tEU/456\tBIOGARAN\tNon"
+            "87654321\tIBUPROFENE BIOGARAN 400 mg, comprime\tcomprime\torale\tAMM\tNationale\tCommercialise\t05/02/2021\tDisponible\tEU/456\tBIOGARAN\tNon",
+            "33333333\tZINC TEST 10 mg, comprime\tcomprime\torale\tAMM\tNationale\tCommercialise\t01/01/2022\tDisponible\tEU/789\tTESTLAB\tNon"
         );
         write(sourceDir.resolve("CIS_CIP_bdpm.txt"),
             "12345678\t1111111\tBoite de 8 comprimes\tActif\tCommercialise\t01/01/2020\t3400930001111\tOui\t65%\t2.18\tRemboursable",
-            "87654321\t2222222\tBoite de 12 comprimes\tActif\tCommercialise\t05/02/2021\t3400930002222\tOui\t30%\t3.50\tRemboursable"
+            "87654321\t2222222\tBoite de 12 comprimes\tActif\tCommercialise\t05/02/2021\t3400930002222\tOui\t30%\t3.50\tRemboursable",
+            "33333333\t3333333\tBoite de 30 comprimes\tActif\tCommercialise\t01/01/2022\t3400930003333\tOui\t0%\t1.00\tNon remboursable"
         );
         write(sourceDir.resolve("CIS_COMPO_bdpm.txt"),
             "12345678\tPrincipe actif\t1111\tPARACETAMOL\t1000 mg\tcomprime\tSA\t1",
-            "87654321\tPrincipe actif\t2222\tIBUPROFENE\t400 mg\tcomprime\tSA\t1"
+            "87654321\tPrincipe actif\t2222\tIBUPROFENE\t400 mg\tcomprime\tSA\t1",
+            "33333333\tPrincipe actif\t3333\tZINC\t10 mg\tcomprime\tSA\t1"
         );
 
         mockMvc.perform(post("/api/imports/bdpm").param("sourceDir", sourceDir.toString()))
             .andExpect(status().isCreated())
             .andExpect(jsonPath("$.succes").value(true))
             .andExpect(jsonPath("$.message").value("Import termine avec succes et verifie en base de donnees."))
-            .andExpect(jsonPath("$.medicamentsImported").value(2))
-            .andExpect(jsonPath("$.presentationsImported").value(2))
-            .andExpect(jsonPath("$.compositionsImported").value(2))
-            .andExpect(jsonPath("$.medicamentsEnBase").value(2))
-            .andExpect(jsonPath("$.presentationsEnBase").value(2))
-            .andExpect(jsonPath("$.compositionsEnBase").value(2))
-            .andExpect(jsonPath("$.fichierMedicaments.lignesImportees").value(2))
-            .andExpect(jsonPath("$.fichierPresentations.lignesImportees").value(2))
-            .andExpect(jsonPath("$.fichierCompositions.lignesImportees").value(2));
+            .andExpect(jsonPath("$.medicamentsImported").value(3))
+            .andExpect(jsonPath("$.presentationsImported").value(3))
+            .andExpect(jsonPath("$.compositionsImported").value(3))
+            .andExpect(jsonPath("$.medicamentsEnBase").value(3))
+            .andExpect(jsonPath("$.presentationsEnBase").value(3))
+            .andExpect(jsonPath("$.compositionsEnBase").value(3))
+            .andExpect(jsonPath("$.fichierMedicaments.lignesImportees").value(3))
+            .andExpect(jsonPath("$.fichierPresentations.lignesImportees").value(3))
+            .andExpect(jsonPath("$.fichierCompositions.lignesImportees").value(3));
 
         mockMvc.perform(get("/api/imports/statut"))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.medicaments").value(2))
-            .andExpect(jsonPath("$.presentations").value(2))
-            .andExpect(jsonPath("$.compositions").value(2));
+            .andExpect(jsonPath("$.medicaments").value(3))
+            .andExpect(jsonPath("$.presentations").value(3))
+            .andExpect(jsonPath("$.compositions").value(3));
 
         mockMvc.perform(get("/api/imports/demarrage"))
             .andExpect(status().isOk())
@@ -84,6 +87,15 @@ class MedixtractorApplicationTests {
             .andExpect(jsonPath("$[0].cis").value(12345678L))
             .andExpect(jsonPath("$[0].name").value("DOLIPRANE 1000 mg, comprime"))
             .andExpect(jsonPath("$[0].activeSubstances[0]").value("PARACETAMOL"));
+
+        mockMvc.perform(get("/api/medicaments").param("rembourse", "oui"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.length()").value(2));
+
+        mockMvc.perform(get("/api/medicaments").param("rembourse", "non"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.length()").value(1))
+            .andExpect(jsonPath("$[0].cis").value(33333333L));
 
         mockMvc.perform(get("/api/filters"))
             .andExpect(status().isOk())

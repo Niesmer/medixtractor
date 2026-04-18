@@ -1,17 +1,21 @@
 import { useParams, Link } from "react-router";
 import { useState, useEffect } from "react";
-import { ArrowLeft, Pill, Calendar, Building2, Beaker, FileText, Package, Euro, AlertCircle } from "lucide-react";
+import { ArrowLeft, Pill, Calendar, Building2, Beaker, FileText, Package, Euro, AlertCircle, Star } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Badge } from "./ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "./ui/table";
 import { Alert, AlertDescription } from "./ui/alert";
-import { getMedicamentDetail, type MedicamentDetail } from "../services/api";
+import { getMedicamentDetail, isFavorite, addFavorite, removeFavorite, type MedicamentDetail } from "../services/api";
 
 export function DrugDetail() {
   const { id } = useParams();
   const [medicament, setMedicament] = useState<MedicamentDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [favorite, setFavorite] = useState(false);
+  const [favoriteLoading, setFavoriteLoading] = useState(false);
+
+  const isAuthenticated = Boolean(localStorage.getItem("authToken"));
 
   useEffect(() => {
     const loadMedicament = async () => {
@@ -24,6 +28,15 @@ export function DrugDetail() {
       try {
         const data = await getMedicamentDetail(id);
         setMedicament(data);
+        if (isAuthenticated) {
+          try {
+            setFavorite(await isFavorite(id));
+          } catch {
+            setFavorite(false);
+          }
+        } else {
+          setFavorite(false);
+        }
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : "Failed to load medicament";
         setError(errorMessage);
@@ -33,7 +46,7 @@ export function DrugDetail() {
     };
 
     loadMedicament();
-  }, [id]);
+  }, [id, isAuthenticated]);
 
   if (loading) {
     return (
@@ -107,6 +120,29 @@ export function DrugDetail() {
                     </span>
                   </div>
                 </div>
+
+                <button
+                  type="button"
+                  disabled={!isAuthenticated || favoriteLoading}
+                  onClick={async () => {
+                    if (!isAuthenticated) return;
+                    setFavoriteLoading(true);
+                    const next = !favorite;
+                    setFavorite(next);
+                    try {
+                      if (next) await addFavorite(String(medicament.cis));
+                      else await removeFavorite(String(medicament.cis));
+                    } catch {
+                      setFavorite(!next);
+                    } finally {
+                      setFavoriteLoading(false);
+                    }
+                  }}
+                  className="p-2 rounded-md hover:bg-gray-50 disabled:opacity-50"
+                  title={isAuthenticated ? (favorite ? "Retirer des favoris" : "Ajouter aux favoris") : "Connecte-toi pour ajouter aux favoris"}
+                >
+                  <Star className={favorite ? "w-6 h-6 text-yellow-500 fill-yellow-500" : "w-6 h-6 text-gray-400"} />
+                </button>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-4">

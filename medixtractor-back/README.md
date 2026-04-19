@@ -1,39 +1,52 @@
-# Medixtractor
+# Medixtractor Backend
 
-Application Spring Boot en Java pour importer la base officielle BDPM francaise, la stocker en SQLite selon le schema simple du projet, puis consulter les medicaments via une interface web.
+API Spring Boot qui importe la base BDPM dans SQLite et expose les endpoints de recherche medicament.
 
 ## Prerequis
 
-- Java 21 ou plus recent
+- Java 21
 
-## Import BDPM (en ligne)
+## Lancement
 
-Par defaut, l'application peut telecharger les fichiers BDPM depuis le site officiel du gouvernement et les mettre en cache dans `data/bdpm-cache`.
-
-Endpoint : `POST /api/imports/bdpm/remote`
-
-Les URLs et le cache sont configurables dans `src/main/resources/application.properties` (prefixe `medixtractor.bdpm.remote.*`).
-
-## Import BDPM (local, optionnel)
-
-Vous pouvez aussi importer depuis un dossier local contenant :
-
-- `CIS_bdpm.txt` (specialites)
-- `CIS_CIP_bdpm.txt` (presentations)
-- `CIS_COMPO_bdpm.txt` (compositions)
-
-Endpoint : `POST /api/imports/bdpm?sourceDir=...`
-
-## Lancement (backend)
+Depuis ce dossier :
 
 ```powershell
 .\gradlew.bat bootRun
 ```
 
-Puis ouvrir `http://localhost:8080`.
+L'application demarre sur `http://localhost:8080`.
 
-## Notes
+## Import BDPM local
 
-- Le backend respecte le schema SQL actuel `medicament`, `presentation`, `composition`.
-- Le dossier `src/main/resources/static/src` est conserve comme source de reference frontend.
-- L'interface effectivement servie par Spring est `src/main/resources/static/index.html`.
+Endpoint :
+
+```text
+POST /api/imports/bdpm?sourceDir=...
+```
+
+Le dossier source doit contenir :
+
+- `CIS_bdpm.txt`
+- `CIS_CIP_bdpm.txt`
+- `CIS_COMPO_bdpm.txt`
+
+Par defaut, le projet fournit aussi ces fichiers dans `data/bdpm` et la configuration pointe vers ce dossier.
+
+## Import BDPM distant
+
+Endpoint :
+
+```text
+POST /api/imports/bdpm/remote
+```
+
+Par defaut, les fichiers telecharges sont mis en cache dans `data/bdpm-cache`.
+Les URLs et timeouts sont configurables via `medixtractor.bdpm.remote.*` dans `src/main/resources/application.properties`.
+
+## Comportement au demarrage
+
+Par defaut, `medixtractor.bdpm.default-source-dir=data/bdpm`.
+
+Si la base SQLite est vide, le backend peut importer automatiquement les fichiers presents dans `data/bdpm`.
+Si la base contient deja des donnees, aucun import automatique supplementaire n'est lance.
+L'import distant reste disponible separement via `/api/imports/bdpm/remote`.

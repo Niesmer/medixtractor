@@ -5,7 +5,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -13,17 +12,9 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
 
-import AHA.medixtractor.security.TokenAuthenticationFilter;
-
 @Configuration
 @EnableWebSecurity
 public class SecurityConfiguration {
-
-    private final TokenAuthenticationFilter tokenAuthenticationFilter;
-
-    public SecurityConfiguration(TokenAuthenticationFilter tokenAuthenticationFilter) {
-        this.tokenAuthenticationFilter = tokenAuthenticationFilter;
-    }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -31,16 +22,13 @@ public class SecurityConfiguration {
             .csrf(csrf -> csrf.disable())
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(authz -> authz
-                // Allow public access to auth endpoints
                 .requestMatchers("/api/auth/signup", "/api/auth/login", "/api/auth/logout").permitAll()
-                // Allow public access to search/filter endpoints
                 .requestMatchers("/api/medicaments/**", "/api/filters/**", "/api/imports/**").permitAll()
-                // All other requests require authentication
-                .anyRequest().authenticated()
+                .anyRequest().permitAll()
             )
             .httpBasic(basic -> basic.disable())
-            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-            .addFilterBefore(tokenAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+            .formLogin(form -> form.disable())
+            .cors(cors -> cors.configurationSource(corsConfigurationSource()));
 
         return http.build();
     }
@@ -48,7 +36,12 @@ public class SecurityConfiguration {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000", "http://localhost:5173"));
+        configuration.setAllowedOriginPatterns(Arrays.asList(
+            "http://localhost:*",
+            "http://127.0.0.1:*",
+            "https://localhost:*",
+            "https://127.0.0.1:*"
+        ));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setAllowCredentials(true);

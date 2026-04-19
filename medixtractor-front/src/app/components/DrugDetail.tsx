@@ -1,10 +1,9 @@
 import { useParams, Link } from "react-router";
 import { useState, useEffect } from "react";
-import { ArrowLeft, Pill, Calendar, Building2, Beaker, FileText, Package, Euro, AlertCircle, Star } from "lucide-react";
+import { ArrowLeft, Pill, Calendar, Building2, Beaker, FileText, Package, Euro, Star } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Badge } from "./ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "./ui/table";
-import { Alert, AlertDescription } from "./ui/alert";
 import { getMedicamentDetail, isFavorite, addFavorite, removeFavorite, type MedicamentDetail } from "../services/api";
 
 export function DrugDetail() {

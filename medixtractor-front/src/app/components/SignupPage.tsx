@@ -5,7 +5,7 @@ import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Alert, AlertDescription } from "./ui/alert";
 import { AlertCircle, CheckCircle2, Loader } from "lucide-react";
-import { signUp } from "../services/api";
+import { signUp, type SignUpParams } from "../services/api";
 
 export function SignupPage() {
   const navigate = useNavigate();
@@ -13,7 +13,7 @@ export function SignupPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [role, setRole] = useState("ADMIN");
+  const [role, setRole] = useState<SignUpParams["role"]>("ADMIN");
   const [siretSiren, setSiretSiren] = useState("");
 
   const [loading, setLoading] = useState(false);
@@ -162,7 +162,7 @@ export function SignupPage() {
               </label>
               <select
                 value={role}
-                onChange={(e) => setRole(e.target.value)}
+                onChange={(e) => setRole(e.target.value as SignUpParams["role"])}
                 disabled={loading || success}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md bg-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               >

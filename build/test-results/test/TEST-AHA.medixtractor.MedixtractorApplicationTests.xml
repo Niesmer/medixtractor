@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="AHA.medixtractor.MedixtractorApplicationTests" tests="1" skipped="0" failures="0" errors="0" timestamp="2026-04-03T16:13:17.643Z" hostname="DESKTOP-88LVDGL" time="12.653">
+  <properties/>
+  <testcase name="importsBdpmAndSearchesBySubstance()" classname="AHA.medixtractor.MedixtractorApplicationTests" time="1.622"/>
+  <system-out><![CDATA[18:13:17.873 [Test worker] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [AHA.medixtractor.MedixtractorApplicationTests]: MedixtractorApplicationTests does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+18:13:17.999 [Test worker] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration AHA.medixtractor.MedixtractorApplication for test class AHA.medixtractor.MedixtractorApplicationTests
+18:13:18.098 [Test worker] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [AHA.medixtractor.MedixtractorApplicationTests]: MedixtractorApplicationTests does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+18:13:18.101 [Test worker] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration AHA.medixtractor.MedixtractorApplication for test class AHA.medixtractor.MedixtractorApplicationTests
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v4.0.4)
+
+2026-04-03T18:13:18.479+02:00  INFO 19740 --- [    Test worker] A.m.MedixtractorApplicationTests         : Starting MedixtractorApplicationTests using Java 21.0.7 with PID 19740 (started by hippo in C:\Users\hippo\IdeaProjects\medixtractor)
+2026-04-03T18:13:18.480+02:00  INFO 19740 --- [    Test worker] A.m.MedixtractorApplicationTests         : No active profile set, falling back to 1 default profile: "default"
+2026-04-03T18:13:19.206+02:00  INFO 19740 --- [    Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-04-03T18:13:19.276+02:00  INFO 19740 --- [    Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 57 ms. Found 3 JPA repository interfaces.
+2026-04-03T18:13:19.734+02:00  INFO 19740 --- [    Test worker] org.hibernate.orm.jpa                    : HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-04-03T18:13:19.841+02:00  INFO 19740 --- [    Test worker] org.hibernate.orm.core                   : HHH000001: Hibernate ORM core version 7.2.7.Final
+2026-04-03T18:13:20.508+02:00  INFO 19740 --- [    Test worker] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-04-03T18:13:20.552+02:00  INFO 19740 --- [    Test worker] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-04-03T18:13:20.798+02:00  INFO 19740 --- [    Test worker] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection conn0: url=jdbc:h2:mem:testdb user=SA
+2026-04-03T18:13:20.802+02:00  INFO 19740 --- [    Test worker] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-04-03T18:13:20.838+02:00  WARN 19740 --- [    Test worker] org.hibernate.orm.deprecation            : HHH90000025: H2Dialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-04-03T18:13:20.874+02:00  INFO 19740 --- [    Test worker] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [jdbc:h2:mem:testdb]
+	Database driver: H2 JDBC Driver
+	Database dialect: H2Dialect
+	Database version: 2.4.240
+	Default catalog/schema: TESTDB/PUBLIC
+	Autocommit mode: undefined/unknown
+	Isolation level: READ_COMMITTED [default READ_COMMITTED]
+	JDBC fetch size: 100
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-04-03T18:13:22.006+02:00  INFO 19740 --- [    Test worker] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-04-03T18:13:22.061+02:00  INFO 19740 --- [    Test worker] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-04-03T18:13:22.194+02:00  INFO 19740 --- [    Test worker] o.s.d.j.r.query.QueryEnhancerFactories   : Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-04-03T18:13:22.794+02:00  WARN 19740 --- [    Test worker] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-04-03T18:13:22.822+02:00  INFO 19740 --- [    Test worker] o.s.b.w.a.WelcomePageHandlerMapping      : Adding welcome page: class path resource [static/index.html]
+2026-04-03T18:13:23.343+02:00  INFO 19740 --- [    Test worker] A.m.MedixtractorApplicationTests         : Started MedixtractorApplicationTests in 5.144 seconds (process running for 6.715)
+2026-04-03T18:13:29.155+02:00  INFO 19740 --- [    Test worker] o.s.b.t.m.w.SpringBootMockServletContext : Initializing Spring TestDispatcherServlet ''
+2026-04-03T18:13:29.155+02:00  INFO 19740 --- [    Test worker] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-04-03T18:13:29.157+02:00  INFO 19740 --- [    Test worker] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 2 ms
+]]></system-out>
+  <system-err><![CDATA[Mockito is currently self-attaching to enable the inline-mock-maker. This will no longer work in future releases of the JDK. Please add Mockito as an agent to your build as described in Mockito's documentation: https://javadoc.io/doc/org.mockito/mockito-core/latest/org.mockito/org/mockito/Mockito.html#0.3
+WARNING: A Java agent has been loaded dynamically (C:\Users\hippo\.gradle\caches\modules-2\files-2.1\net.bytebuddy\byte-buddy-agent\1.17.8\f09415827a71be7ed621c7bd02550678f28bc81c\byte-buddy-agent-1.17.8.jar)
+WARNING: If a serviceability tool is in use, please run with -XX:+EnableDynamicAgentLoading to hide this warning
+WARNING: If a serviceability tool is not in use, please run with -Djdk.instrument.traceUsage for more information
+WARNING: Dynamic loading of agents will be disallowed by default in a future release
+]]></system-err>
+</testsuite>

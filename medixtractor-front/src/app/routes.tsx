@@ -14,9 +14,9 @@ export const router = createBrowserRouter([
     children: [
       { index: true, Component: Home },
       { path: "search", Component: SearchResults },
-      { path: "recherche", Component: SearchResults }, // Support old URL
+      { path: "recherche", Component: SearchResults },
       { path: "drug/:id", Component: DrugDetail },
-      { path: "medicament/:id", Component: DrugDetail }, // Support old URL
+      { path: "medicament/:id", Component: DrugDetail },
       { path: "favorites", Component: Favorites },
       { path: "signup", Component: SignupPage },
       { path: "login", Component: LoginPage },

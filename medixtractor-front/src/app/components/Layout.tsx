@@ -4,7 +4,7 @@ import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { useState, useEffect, useRef } from "react";
 import { medicaments } from "../data/medicamentsData";
-import { logout } from "../services/api";
+import { logout, formatRole } from "../services/api";
 
 export function Layout() {
   const navigate = useNavigate();
@@ -213,7 +213,7 @@ export function Layout() {
                   >
                     <div className="text-right hidden md:block">
                       <p className="text-sm font-medium text-gray-900 leading-tight">{user.fullName}</p>
-                      <p className="text-xs text-gray-500 leading-tight">{user.role}</p>
+                      <p className="text-xs text-gray-500 leading-tight">{formatRole(user.role)}</p>
                     </div>
                     <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
                       <span className="text-sm font-semibold text-blue-600">

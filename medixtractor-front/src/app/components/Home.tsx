@@ -14,10 +14,21 @@ export function Home() {
   const [sourceDir, setSourceDir] = useState("data/bdpm");
   const [isImporting, setIsImporting] = useState(false);
   const [importError, setImportError] = useState("");
+  const [userRole, setUserRole] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  // Load initial data
   useEffect(() => {
+    // Get user role
+    try {
+      const userData = localStorage.getItem("user");
+      if (userData) {
+        const user = JSON.parse(userData);
+        setUserRole(user.role);
+      }
+    } catch (error) {
+      console.error("Failed to parse user data:", error);
+    }
+
     const loadData = async () => {
       try {
         const statusData = await getDatabaseStatus();
@@ -52,7 +63,6 @@ export function Home() {
       const result = await importBDPM(sourceDir.trim());
       setImportStatus(result);
 
-      // Reload stats after import
       try {
         const statusData = await getDatabaseStatus();
         setStats(statusData);
@@ -237,7 +247,8 @@ export function Home() {
         </div>
       </div>
 
-      {/* Import Section */}
+      {/* Import Section - Only for Admin */}
+      {userRole === "ADMIN" && (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* Import Card */}
@@ -352,6 +363,7 @@ export function Home() {
           </Card>
         </div>
       </div>
+      )}
     </div>
   );
 }

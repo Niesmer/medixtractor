@@ -13,8 +13,9 @@ export function SignupPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [role, setRole] = useState<SignUpParams["role"]>("ADMIN");
-  const [siretSiren, setSiretSiren] = useState("");
+  const [role, setRole] = useState<SignUpParams["role"]>("DOCTOR");
+  const [siren, setSiren] = useState("");
+  const [siret, setSiret] = useState("");
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -40,8 +41,23 @@ export function SignupPage() {
       return;
     }
 
-    if ((role === "DOCTOR" || role === "PHARMACIST") && !siretSiren.trim()) {
-      setError(`${role} doit fournir un numéro SIRET/SIREN.`);
+    if (role === "DOCTOR" && !siren.trim()) {
+      setError("Médecin doit fournir un numéro SIREN.");
+      return;
+    }
+
+    if (role === "DOCTOR" && siren.replace(/\D/g, "").length !== 9) {
+      setError("Le SIREN doit contenir exactement 9 chiffres.");
+      return;
+    }
+
+    if (role === "PHARMACIST" && !siret.trim()) {
+      setError("Pharmacien doit fournir un numéro SIRET.");
+      return;
+    }
+
+    if (role === "PHARMACIST" && siret.replace(/\D/g, "").length !== 14) {
+      setError("Le SIRET doit contenir exactement 14 chiffres.");
       return;
     }
 
@@ -53,7 +69,7 @@ export function SignupPage() {
         email: email.trim().toLowerCase(),
         password,
         role,
-        siretSiren: siretSiren.trim() || undefined
+        siretSiren: role === "DOCTOR" ? siren.trim() : role === "PHARMACIST" ? siret.trim() : undefined
       });
 
       if (response.success) {
@@ -166,30 +182,47 @@ export function SignupPage() {
                 disabled={loading || success}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md bg-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
-                <option value="ADMIN">Administrateur</option>
                 <option value="DOCTOR">Médecin</option>
                 <option value="PHARMACIST">Pharmacien</option>
               </select>
             </div>
 
-            {/* SIRET/SIREN (conditional) */}
-            {(role === "DOCTOR" || role === "PHARMACIST") && (
+            {/* SIREN for Doctors */}
+            {role === "DOCTOR" && (
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  {role === "DOCTOR" ? "SIREN" : "SIRET"} (Numéro d'inscription professionnel)
+                  SIREN (Numéro d'inscription professionnel)
                 </label>
                 <Input
                   type="text"
-                  value={siretSiren}
-                  onChange={(e) => setSiretSiren(e.target.value.replace(/\D/g, ""))}
-                  placeholder="14 chiffres"
+                  value={siren}
+                  onChange={(e) => setSiren(e.target.value.replace(/\D/g, ""))}
+                  placeholder="000000000"
+                  maxLength={9}
+                  disabled={loading || success}
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  Entrez votre numéro SIREN (9 chiffres)
+                </p>
+              </div>
+            )}
+
+            {/* SIRET for Pharmacists */}
+            {role === "PHARMACIST" && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  SIRET (Numéro d'inscription professionnel)
+                </label>
+                <Input
+                  type="text"
+                  value={siret}
+                  onChange={(e) => setSiret(e.target.value.replace(/\D/g, ""))}
+                  placeholder="00000000000000"
                   maxLength={14}
                   disabled={loading || success}
                 />
                 <p className="text-xs text-gray-500 mt-1">
-                  {role === "DOCTOR"
-                    ? "Entrez votre numéro SIREN (14 chiffres)"
-                    : "Entrez votre numéro SIRET (14 chiffres)"}
+                  Entrez votre numéro SIRET (14 chiffres)
                 </p>
               </div>
             )}

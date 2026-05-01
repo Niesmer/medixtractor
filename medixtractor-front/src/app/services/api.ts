@@ -2,6 +2,16 @@
 
 const API_BASE = '/api';
 
+// Format role to French with proper capitalization
+export function formatRole(role: string): string {
+  const roleMap: { [key: string]: string } = {
+    'DOCTOR': 'Médecin',
+    'PHARMACIST': 'Pharmacien',
+    'ADMIN': 'Administrateur'
+  };
+  return roleMap[role] || role;
+}
+
 function authHeaders(): HeadersInit {
   const token = localStorage.getItem('authToken');
   return token ? { Authorization: `Bearer ${token}` } : {};
